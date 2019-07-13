@@ -12,6 +12,8 @@
 #include <QHBoxLayout>
 #include <QWidget>
 
+#include "common.h"
+
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -40,9 +42,20 @@ private:
     QPushButton* btnDelete;
 
 private:
+    CommodityInfo commodityInfo;
+
+    QString sqlCreate;
+    QString sqlSearch;
+    QString sqlInsert;
+    QString sqlUpdate;
+    QString sqlDelete;
+
+private:
     void initDB();
     void initModel();
     void paint();
+    void Connect();
+
     bool isFileExist(QString fullFilePath);
 
 protected:
@@ -51,6 +64,12 @@ protected:
 signals:
 
 public slots:
+    on_btnSearch_clicked();
+    on_btnInsert_clicked();
+    on_btnUpdate_clicked();
+    on_btnDelete_clicked();
+
+    on_view_select(QModelIndex index);
 };
 
 #endif // MAINWINDOW_H
