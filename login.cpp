@@ -15,6 +15,7 @@ Login::Login(QWidget *parent) : QWidget(parent)
 Login::~Login()
 {
     delete vLayoutLogin;
+    delete m_Loop;
 }
 
 int Login::exec()
