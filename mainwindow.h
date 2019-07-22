@@ -10,9 +10,12 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QWidget>
+#include <QLabel>
+#include <QDateTimeEdit>
+#include <QLineEdit>
 
 #include "common.h"
+#include "sqliteutil.h"
 
 class MainWindow : public QWidget
 {
@@ -26,10 +29,11 @@ private:
     int m_Result;
     QEventLoop* m_Loop;
 
-    QHBoxLayout* hLayoutTop;
+    QHBoxLayout* hLayoutType;
+    QHBoxLayout* hLayoutTime;
     QHBoxLayout* hLayoutView;
-    QHBoxLayout* hLayoutBottom;
 
+    QVBoxLayout* vLayoutMain;
     QVBoxLayout* vLayoutButtons;
     QVBoxLayout* vLayoutView;
 
@@ -41,8 +45,24 @@ private:
     QPushButton* btnUpdate;
     QPushButton* btnDelete;
 
+    QPushButton* btnAll;
+    QPushButton* btnIn;
+    QPushButton* btnOut;
+
+    QLabel* lblTimeBegin;
+    QLabel* lblTimeEnd;
+
+    QDateTimeEdit* dateTimeEditBegin;
+    QDateTimeEdit* dateTimeEditEnd;
+
+    QLabel* lblCompany;
+
+    QLineEdit* lineEditCompany;
+
 private:
+    QString DBName;
     CommodityInfo commodityInfo;
+    SqliteUtil* sqliteUtil;
 
     QString sqlCreate;
     QString sqlSearch;
@@ -64,12 +84,16 @@ protected:
 signals:
 
 public slots:
-    on_btnSearch_clicked();
-    on_btnInsert_clicked();
-    on_btnUpdate_clicked();
-    on_btnDelete_clicked();
+    void on_btnSearch_clicked();
+    void on_btnInsert_clicked();
+    void on_btnUpdate_clicked();
+    void on_btnDelete_clicked();
 
-    on_view_select(QModelIndex index);
+    void on_btnAll_clicked();
+    void on_btnIn_clicked();
+    void on_btnOut_clicked();
+
+    void on_view_select(QModelIndex index);
 };
 
 #endif // MAINWINDOW_H

@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "sqliteutil.h"
+//#include "sqliteutil.h"
 
 #include <QString>
 #include <QFileInfo>
@@ -8,7 +8,6 @@
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
-
     initDB();
 
     initModel();
@@ -20,8 +19,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
 MainWindow::~MainWindow()
 {
-    delete hLayoutView;
+    delete vLayoutMain;
     delete m_Loop;
+    delete sqliteUtil;
 }
 
 int MainWindow::exec()
@@ -47,7 +47,9 @@ bool MainWindow::isFileExist(QString fullFilePath)
 
 void MainWindow::initDB()
 {
-    //    if(isFileExist("Commidity.db"))
+    DBName = "Commodity.db";
+
+    //    if(isFileExist(DBName))
     //        return;
 
     sqlCreate = "CREATE TABLE Commodity (ID INTEGER PRIMARY KEY AUTOINCREMENT, Time VARCHAR(32), Type VARCHAR(32), "
@@ -56,25 +58,24 @@ void MainWindow::initDB()
     sqlInsert = "INSERT INTO Commodity (Time, Type, Category, Company, Count, Price, TotalPrice, Note) "
                 "VALUES ('2019-07-06 12:24', '1', 'ball', 'NBA Store', '3', '20.0', '60', 'happy')";
 
-    SqliteUtil* sqliteUtil = new SqliteUtil("Commidity.db");
-    //    sqliteUtil->ExecuteRecord(sqlCreate);
+    SqliteUtil* sqliteUtil = new SqliteUtil(DBName);
+    //sqliteUtil->ExecuteRecord(sqlCreate);
     sqliteUtil->ExecuteRecord(sqlInsert);
     delete sqliteUtil;
 }
 
 void MainWindow::initModel()
 {
-    SqliteUtil* sqliteUtil = new SqliteUtil("Commidity.db");
+    sqliteUtil = new SqliteUtil(DBName);
 
     model = new QSqlTableModel(this, sqliteUtil->m_db);
     model->setTable("Commodity");
     model->select();
-
-    delete sqliteUtil;
 }
 
 void MainWindow::paint()
 {
+    // view
     view = new QTableView();
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
@@ -104,18 +105,76 @@ void MainWindow::paint()
 
     vLayoutView->addWidget(view);
 
-    hLayoutView = new QHBoxLayout(this);
+    hLayoutView = new QHBoxLayout();
     hLayoutView->addLayout(vLayoutView);
     hLayoutView->addLayout(vLayoutButtons);
+
+    // type
+    btnAll = new QPushButton();
+    btnIn = new QPushButton();
+    btnOut = new QPushButton();
+
+    btnAll->setText(tr("All"));
+    btnIn->setText(tr("In"));
+    btnOut->setText(tr("Out"));
+
+    hLayoutType = new QHBoxLayout();
+
+    hLayoutType->addWidget(btnAll);
+    hLayoutType->addWidget(btnIn);
+    hLayoutType->addWidget(btnOut);
+
+    // time & company
+    lblTimeBegin = new QLabel();
+    lblTimeEnd = new QLabel();
+    lblCompany = new QLabel();
+
+    lblTimeBegin->setText(tr("Begin: "));
+    lblTimeEnd->setText(tr("End: "));
+    lblCompany->setText(tr("Company: "));
+
+    dateTimeEditBegin = new QDateTimeEdit();
+    dateTimeEditEnd = new QDateTimeEdit();
+
+    lineEditCompany = new QLineEdit();
+
+    hLayoutTime = new QHBoxLayout();
+
+    hLayoutTime->addWidget(lblTimeBegin);
+    hLayoutTime->addWidget(dateTimeEditBegin);
+    hLayoutTime->addWidget(lblTimeEnd);
+    hLayoutTime->addWidget(dateTimeEditEnd);
+    hLayoutTime->addWidget(lblCompany);
+    hLayoutTime->addWidget(lineEditCompany);
+
+    // Main
+    vLayoutMain = new QVBoxLayout(this);
+
+    vLayoutMain->addLayout(hLayoutType);
+    vLayoutMain->addLayout(hLayoutTime);
+    vLayoutMain->addLayout(hLayoutView);
+
+    // control init
+    dateTimeEditBegin->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
+    dateTimeEditEnd->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
+
+    dateTimeEditBegin->setCalendarPopup(true);
+    dateTimeEditEnd->setCalendarPopup(true);
+
+    //dateTimeEditBegin->setDateTime(QDateTime.currentDateTime());
+    //dateTimeEditEnd->setDateTime(QDateTime.currentDateTime());
 }
 
 void MainWindow::Connect()
 {
-    //    connect(btnLogin, &QPushButton::clicked, this, &Login::on_btnLogin_clicked);
     connect(btnSearch, &QPushButton::clicked, this, &MainWindow::on_btnSearch_clicked);
     connect(btnInsert, &QPushButton::clicked, this, &MainWindow::on_btnInsert_clicked);
     connect(btnUpdate, &QPushButton::clicked, this, &MainWindow::on_btnUpdate_clicked);
     connect(btnDelete, &QPushButton::clicked, this, &MainWindow::on_btnDelete_clicked);
+
+    connect(btnAll, &QPushButton::clicked, this, &MainWindow::on_btnAll_clicked);
+    connect(btnIn, &QPushButton::clicked, this, &MainWindow::on_btnIn_clicked);
+    connect(btnOut, &QPushButton::clicked, this, &MainWindow::on_btnOut_clicked);
 
     connect(view, &QTableView::clicked, this, &MainWindow::on_view_select);
 }
@@ -130,68 +189,62 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-MainWindow::on_btnSearch_clicked()
+void MainWindow::on_btnAll_clicked()
+{
+    model->select();
+}
+
+void MainWindow::on_btnIn_clicked()
+{
+    model->setFilter(QObject::tr("Type = '1'"));  // Type 1:In 0:Out
+    model->select();
+}
+
+void MainWindow::on_btnOut_clicked()
+{
+    model->setFilter(QObject::tr("Type = '0'"));
+    model->select();
+}
+
+void MainWindow::on_btnSearch_clicked()
+{
+    model->setTable("Commodity");
+    model->select();
+}
+
+void MainWindow::on_btnInsert_clicked()
 {
 
 }
 
-MainWindow::on_btnInsert_clicked()
+void MainWindow::on_btnUpdate_clicked()
 {
 
 }
 
-MainWindow::on_btnUpdate_clicked()
+void MainWindow::on_btnDelete_clicked()
 {
+    QModelIndexList select = view->selectionModel()->selectedRows();
 
-}
-
-MainWindow::on_btnDelete_clicked()
-{
-    QMessageBox::StandardButton button;
-    button = QMessageBox::question(this, tr("Delete"),
-                                   QString(tr("Are you sure to delete information ID = %0?").arg(commodityInfo.ID)),
-                                   QMessageBox::Yes|QMessageBox::No);
-    if(button == QMessageBox::Yes)
+    if(!select.empty())
     {
-        sqlDelete = QString("DELETE FROM Commodity WHERE ID = %0").arg(commodityInfo.ID);
-
-        qDebug() << sqlDelete;
-
-        SqliteUtil* sqliteUtil = new SqliteUtil("Commidity.db");
-        sqliteUtil->ExecuteRecord(sqlDelete);
-
         QModelIndexList select = view->selectionModel()->selectedRows();
         QModelIndex idIndex = select.at(0);
-        model->removeRow(idIndex.row());
-        model->submitAll();
-        model->select();
 
-        delete sqliteUtil;
-
+        QMessageBox::StandardButton button;
+        button = QMessageBox::question(this, tr("Delete"),
+                                       QString(tr("Are you sure to delete information ID = %0 ?").arg(commodityInfo.ID)),
+                                       QMessageBox::Yes|QMessageBox::No);
+        if(button == QMessageBox::Yes)
+        {
+            model->removeRow(idIndex.row());
+            model->submitAll();
+            model->select();
+        }
     }
-
-    //    QModelIndexList select = view->selectionModel()->selectedRows();
-
-    //    if(!select.empty())
-    //    {
-    //        QModelIndex idIndex = select.at(0);//得到选中行的id索引
-    //        //        QString name = idIndex.sibling(idIndex.row(), 2).data().toString();
-    //        QMessageBox::StandardButton button;
-    //        //        button = QMessageBox::question(this, tr("Delete"), QString(tr("Are you sure to delete '%1' information?").arg(name)), QMessageBox::Yes|QMessageBox::No);
-    //        //        if(button == QMessageBox::Yes)
-    //        //        {
-    //        SqliteUtil* sqliteUtil = new SqliteUtil("Commidity.db");
-
-    //        model->removeRow(idIndex.row());
-    //        model->submitAll();
-    //        model->select();
-
-    //        delete sqliteUtil;
-    //        //        }
-    //    }
 }
 
-MainWindow::on_view_select(QModelIndex index)
+void MainWindow::on_view_select(QModelIndex index)
 {
     //    ( "ID", "Time", "Type", "Category", "Company", "Count",
     //    "Price", "TotalPrice", "Note" )
