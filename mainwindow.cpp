@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-//#include "sqliteutil.h"
 
 #include <QString>
 #include <QFileInfo>
@@ -159,12 +158,31 @@ void MainWindow::paint()
     hLayoutTime->addWidget(lblCompany);
     hLayoutTime->addWidget(lineEditCompany);
 
+    // info
+    hLayoutInfo = new QHBoxLayout();
+
+    lblRecordCount = new QLabel();
+    lblRecordCountInfo = new QLabel();
+    lblTotalPrice = new QLabel();
+    lblTotalPriceInfo = new QLabel();
+
+    lblRecordCount->setText(tr("Record Count: "));
+    lblRecordCountInfo->setText(tr("0"));
+    lblTotalPrice->setText(tr("Total Price: "));
+    lblTotalPriceInfo->setText(tr("0"));
+
+    hLayoutInfo->addWidget(lblRecordCount);
+    hLayoutInfo->addWidget(lblRecordCountInfo);
+    hLayoutInfo->addWidget(lblTotalPrice);
+    hLayoutInfo->addWidget(lblTotalPriceInfo);
+
     // Main
     vLayoutMain = new QVBoxLayout(this);
 
     vLayoutMain->addLayout(hLayoutType);
     vLayoutMain->addLayout(hLayoutTime);
     vLayoutMain->addLayout(hLayoutView);
+    vLayoutMain->addLayout(hLayoutInfo);
 
     // control init
     dateTimeEditBegin->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
@@ -199,6 +217,7 @@ void MainWindow::Connect()
 // type: -1:All 0：Out 1:In
 void MainWindow::select(int type = -1)
 {
+    // view
     QString filter = "";
     QString filterTime= "";
     QString filterType = "";
@@ -229,6 +248,24 @@ void MainWindow::select(int type = -1)
 
     model->setFilter(filter);
     model->select();
+
+    // info
+    QString sqlCount = QString("SELECT Count(ID) FROM Commodity WHERE %0").arg(filter);
+    QString count = "";
+    QString sqlSum = QString("SELECT SUM(TotalPrice) FROM Commodity WHERE %0").arg(filter);
+    QString sum = "";
+
+    qDebug() << sqlCount;
+    qDebug() << sqlSum;
+
+    count = sqliteUtil->ExecuteString(sqlCount);
+    sum = sqliteUtil->ExecuteString(sqlSum);
+
+    qDebug() << count;
+    qDebug() << sum;
+
+    lblRecordCountInfo->setText(count);
+    lblTotalPriceInfo->setText(sum);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

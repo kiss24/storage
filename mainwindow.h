@@ -32,6 +32,7 @@ private:
     QHBoxLayout* hLayoutType;
     QHBoxLayout* hLayoutTime;
     QHBoxLayout* hLayoutView;
+    QHBoxLayout* hLayoutInfo;
 
     QVBoxLayout* vLayoutMain;
     QVBoxLayout* vLayoutButtons;
@@ -51,6 +52,10 @@ private:
 
     QLabel* lblTimeBegin;
     QLabel* lblTimeEnd;
+    QLabel* lblRecordCount;
+    QLabel* lblRecordCountInfo;
+    QLabel* lblTotalPrice;
+    QLabel* lblTotalPriceInfo;
 
     QDateTimeEdit* dateTimeEditBegin;
     QDateTimeEdit* dateTimeEditEnd;
