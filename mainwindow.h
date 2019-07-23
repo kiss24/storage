@@ -70,11 +70,21 @@ private:
     QString sqlUpdate;
     QString sqlDelete;
 
+    QString company;
+    QString dateTimeBegin;
+    QString dateTimeEnd;
+
+    const int TypeAll = -1;
+    const int TypeIn = 1;
+    const int TypeOut = 0;
+
 private:
+    void initPara();
     void initDB();
     void initModel();
     void paint();
     void Connect();
+    void select(int type);
 
     bool isFileExist(QString fullFilePath);
 
@@ -92,6 +102,11 @@ public slots:
     void on_btnAll_clicked();
     void on_btnIn_clicked();
     void on_btnOut_clicked();
+
+    void on_dateTimeEditBegin_changed(const QDateTime &dateTime);
+    void on_dateTimeEditEnd_changed(const QDateTime &dateTime);
+
+    void on_lineEditCompany_changed(const QString &content);
 
     void on_view_select(QModelIndex index);
 };

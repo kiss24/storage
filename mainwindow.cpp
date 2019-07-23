@@ -7,7 +7,9 @@
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
-{
+{   
+    initPara();
+
     initDB();
 
     initModel();
@@ -35,6 +37,16 @@ int MainWindow::exec()
     return m_Result;
 }
 
+void MainWindow::initPara()
+{
+    company = "";
+
+    dateTimeBegin = QDateTime::currentDateTime().
+            toString("yyyy-MM-dd HH：mm：ss");
+    dateTimeEnd = QDateTime::currentDateTime().addMonths(1).
+            toString("yyyy-MM-dd HH：mm：ss");
+}
+
 bool MainWindow::isFileExist(QString fullFilePath)
 {
     QFile file(fullFilePath);
@@ -56,7 +68,7 @@ void MainWindow::initDB()
                 "Category VARCHAR(32), Company VARCHAR(32), Count VARCHAR(32), Price VARCHAR(32), TotalPrice VARCHAR(32), Note VARCHAR(128))";
 
     sqlInsert = "INSERT INTO Commodity (Time, Type, Category, Company, Count, Price, TotalPrice, Note) "
-                "VALUES ('2019-07-06 12:24', '1', 'ball', 'NBA Store', '3', '20.0', '60', 'happy')";
+                "VALUES ('2019-07-24 09:32:44', '1', 'ball', 'NBA', '3', '20.0', '60', 'happy')";
 
     SqliteUtil* sqliteUtil = new SqliteUtil(DBName);
     //sqliteUtil->ExecuteRecord(sqlCreate);
@@ -161,8 +173,8 @@ void MainWindow::paint()
     dateTimeEditBegin->setCalendarPopup(true);
     dateTimeEditEnd->setCalendarPopup(true);
 
-    //dateTimeEditBegin->setDateTime(QDateTime.currentDateTime());
-    //dateTimeEditEnd->setDateTime(QDateTime.currentDateTime());
+    dateTimeEditBegin->setDateTime(QDateTime::currentDateTime());
+    dateTimeEditEnd->setDateTime(QDateTime::currentDateTime().addMonths(1));
 }
 
 void MainWindow::Connect()
@@ -176,7 +188,47 @@ void MainWindow::Connect()
     connect(btnIn, &QPushButton::clicked, this, &MainWindow::on_btnIn_clicked);
     connect(btnOut, &QPushButton::clicked, this, &MainWindow::on_btnOut_clicked);
 
+    connect(dateTimeEditBegin, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::on_dateTimeEditBegin_changed);
+    connect(dateTimeEditEnd, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::on_dateTimeEditEnd_changed);
+
+    connect(lineEditCompany, &QLineEdit::textChanged, this, &MainWindow::on_lineEditCompany_changed);
+
     connect(view, &QTableView::clicked, this, &MainWindow::on_view_select);
+}
+
+// type: -1:All 0：Out 1:In
+void MainWindow::select(int type = -1)
+{
+    QString filter = "";
+    QString filterTime= "";
+    QString filterType = "";
+    QString filterCompany = "";
+
+    filterTime = "Time > '" + dateTimeBegin + "' AND Time < '" + dateTimeEnd + "'";
+
+    switch (type)
+    {
+    case -1:
+        filterType = "";
+        break;
+    case 0:
+        filterType = "AND Type = '0'";
+        break;
+    case 1:
+        filterType = "AND Type = '1'";
+    default:
+        break;
+    }
+
+    if(!QString(company).isEmpty())
+        filterCompany = QString("AND Company = '%0'").arg(company);
+
+    filter = QString("%0 %1 %2").arg(filterTime).arg(filterType).arg(filterCompany);
+
+    qDebug() << filter;
+
+    model->setFilter(filter);
+    model->select();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -191,19 +243,35 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::on_btnAll_clicked()
 {
-    model->select();
+    select(TypeAll);
 }
 
 void MainWindow::on_btnIn_clicked()
 {
-    model->setFilter(QObject::tr("Type = '1'"));  // Type 1:In 0:Out
-    model->select();
+    select(TypeIn);
 }
 
 void MainWindow::on_btnOut_clicked()
 {
-    model->setFilter(QObject::tr("Type = '0'"));
-    model->select();
+    select(TypeOut);
+}
+
+void MainWindow::on_dateTimeEditBegin_changed(const QDateTime &dateTime)
+{
+    dateTimeBegin = dateTime.toString("yyyy-MM-dd HH:mm:ss");
+    qDebug() << dateTimeBegin;
+}
+
+void MainWindow::on_dateTimeEditEnd_changed(const QDateTime &dateTime)
+{
+    dateTimeEnd = dateTime.toString("yyyy-MM-dd HH:mm:ss");
+    qDebug() << dateTimeEnd;
+}
+
+void MainWindow::on_lineEditCompany_changed(const QString &content)
+{
+    company = content;
+    qDebug() << company;
 }
 
 void MainWindow::on_btnSearch_clicked()
