@@ -29,10 +29,14 @@ SOURCES += \
         login.cpp \
         mainwindow.cpp \
     sqliteutil.cpp \
-    common.cpp
+    common.cpp \
+    edit.cpp \
+    global.cpp
 
 HEADERS += \
         login.h \
         mainwindow.h \
     sqliteutil.h \
-    common.h
+    common.h \
+    edit.h \
+    global.h

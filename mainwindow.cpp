@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+extern CommodityInfo globalCommodityInfo;
+
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {   
     initPara();
@@ -67,7 +69,7 @@ void MainWindow::initDB()
                 "Category VARCHAR(32), Company VARCHAR(32), Count VARCHAR(32), Price VARCHAR(32), TotalPrice VARCHAR(32), Note VARCHAR(128))";
 
     sqlInsert = "INSERT INTO Commodity (Time, Type, Category, Company, Count, Price, TotalPrice, Note) "
-                "VALUES ('2019-07-24 09:32:44', '1', 'ball', 'NBA', '3', '20.0', '60', 'happy')";
+                "VALUES ('2019-08-24 09:32:44', '1', 'ball', 'CBA', '3', '40.0', '120', 'happy')";
 
     SqliteUtil* sqliteUtil = new SqliteUtil(DBName);
     //sqliteUtil->ExecuteRecord(sqlCreate);
@@ -212,6 +214,9 @@ void MainWindow::Connect()
     connect(lineEditCompany, &QLineEdit::textChanged, this, &MainWindow::on_lineEditCompany_changed);
 
     connect(view, &QTableView::clicked, this, &MainWindow::on_view_select);
+
+    connect(edit.btnOK, &QPushButton::clicked, this, &MainWindow::on_btnOK_clicked);
+    connect(edit.btnCancel, &QPushButton::clicked, this, &MainWindow::on_btnCancel_clicked);
 }
 
 // type: -1:All 0：Out 1:In
@@ -319,7 +324,8 @@ void MainWindow::on_btnSearch_clicked()
 
 void MainWindow::on_btnInsert_clicked()
 {
-
+    if(edit.exec() == 1)
+        ;
 }
 
 void MainWindow::on_btnUpdate_clicked()
@@ -374,6 +380,18 @@ void MainWindow::on_view_select(QModelIndex index)
     qDebug() << "commodityInfo.price: " << commodityInfo.price;
     qDebug() << "commodityInfo.totalPrice: " << commodityInfo.totalPrice;
     qDebug() << "commodityInfo.note: " << commodityInfo.note;
+
+    globalCommodityInfo = commodityInfo;
+}
+
+void MainWindow::on_btnOK_clicked()
+{
+    qDebug() << "OK";
+}
+
+void MainWindow::on_btnCancel_clicked()
+{
+    qDebug() << "Cancel";
 }
 
 

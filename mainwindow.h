@@ -16,6 +16,7 @@
 
 #include "common.h"
 #include "sqliteutil.h"
+#include "edit.h"
 
 class MainWindow : public QWidget
 {
@@ -65,6 +66,8 @@ private:
     QLineEdit* lineEditCompany;
 
 private:
+    Edit edit;
+
     QString DBName;
     CommodityInfo commodityInfo;
     SqliteUtil* sqliteUtil;
@@ -114,6 +117,9 @@ public slots:
     void on_lineEditCompany_changed(const QString &content);
 
     void on_view_select(QModelIndex index);
+
+    void on_btnOK_clicked();
+    void on_btnCancel_clicked();
 };
 
 #endif // MAINWINDOW_H
