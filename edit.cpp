@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QDateTime>
 
 extern CommodityInfo globalCommodityInfo;
 
@@ -9,8 +10,9 @@ Edit::Edit(QWidget *parent) : QWidget(parent)
 {
     this->setWindowModality(Qt::ApplicationModal);
 
-
     paint();
+
+    Connect();
 }
 
 Edit::~Edit()
@@ -60,12 +62,18 @@ void Edit::paint()
     lineEditTotalPrice = new QLineEdit();
     lineEditNote = new QLineEdit();
 
+    lineEditID->setEnabled(false);
+
     dateTimeEdit = new QDateTimeEdit();
+    dateTimeEdit->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
+    dateTimeEdit->setCalendarPopup(true);
+    dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
     comboBoxType = new QComboBox();
 
     comboBoxType->addItem(tr("Out"));
     comboBoxType->addItem(tr("In"));
+    comboBoxType->setCurrentIndex(-1);
 
     btnCancel = new QPushButton();
     btnOK = new QPushButton();
@@ -99,9 +107,33 @@ void Edit::paint()
 
 void Edit::Connect()
 {
-//    connect(lineEditCategory, &QLineEdit::textChanged, this, on_lineEditCategory_changed);
-//    connect(lineEditCompany, &QLineEdit::textChanged, this, on_lineEditCompany_changed);
-//    connect(line)
+//    connect(lineEditCategory, &QLineEdit::textChanged, this, &Edit::on_lineEditCategory_changed);
+//    connect(lineEditCompany, &QLineEdit::textChanged, this, &Edit::on_lineEditCompany_changed);
+    connect(lineEditCount, &QLineEdit::textChanged, this, &Edit::on_lineEditCount_changed);
+    connect(lineEditPrice, &QLineEdit::textChanged, this, &Edit::on_lineEditPrice_changed);
+//    connect(lineEditTotalPrice, &QLineEdit::textChanged, this, &Edit::on_lineEditTotalPrice_changed);
+//    connect(lineEditNote, &QLineEdit::textChanged, this, &Edit::on_lineEditNote_changed);
+//    connect(dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &Edit::on_dateTimeEdit_changed);
+
+    // TODO &QComboBox::currentIndexChanged is better.
+    connect(comboBoxType, &QComboBox::currentTextChanged, this, &Edit::on_comboBoxType_changed);
+
+}
+
+void Edit::calculateTotalPrice()
+{
+    int type =  globalCommodityInfo.type;
+    double price = globalCommodityInfo.price;
+    int count = globalCommodityInfo.count;
+    double totalPrice = 0;
+
+    if(type == 0)
+        totalPrice = - price * count;
+
+    if(type == 1)
+        totalPrice = price * count;
+
+    lineEditTotalPrice->setText(QString("%0").arg(totalPrice));
 }
 
 void Edit::closeEvent(QCloseEvent *event)
@@ -116,15 +148,69 @@ void Edit::closeEvent(QCloseEvent *event)
 
 //void Edit::on_lineEditCategory_changed(const QString &content)
 //{
+//    qDebug() << "Category: " <<  content;
 
+//    globalCommodityInfo.category = content;
 //}
 
 //void Edit::on_lineEditCompany_changed(const QString &content)
 //{
+//    qDebug() << "Company: " << content;
 
+//    globalCommodityInfo.company = content;
 //}
 
-//void Edit::on_lineEditCount_changed(const QString &content)
+void Edit::on_lineEditCount_changed(const QString &content)
+{
+    qDebug() << "Count: " << content;
+
+    globalCommodityInfo.count = content.toInt();
+
+    calculateTotalPrice();
+}
+
+void Edit::on_lineEditPrice_changed(const QString &content)
+{
+    qDebug() << "Price: " <<  content;
+
+    globalCommodityInfo.price = content.toDouble();
+
+    calculateTotalPrice();
+}
+
+//void Edit::on_lineEditTotalPrice_changed(const QString &content)
 //{
+//    qDebug() << "TotalPrice: " << content;
 
+//    globalCommodityInfo.totalPrice = content.toDouble();
 //}
+
+//void Edit::on_lineEditNote_changed(const QString &content)
+//{
+//    qDebug() << "Note: " << content;
+
+//    globalCommodityInfo.note = content;
+//}
+
+//void Edit::on_dateTimeEdit_changed(const QDateTime &dateTime)
+//{
+//    qDebug() << dateTime.toString("yyyy-MM-dd HH:mm:ss");
+
+//    globalCommodityInfo.time = dateTime.toString("yyyy-MM-dd HH:mm:ss");
+//}
+
+void Edit::on_comboBoxType_changed(const QString &content)
+{
+    qDebug() << "Type: " << content;
+
+    int type = -1;
+
+    if(content == "In")
+        type = 1;
+    if(content == "Out")
+        type = 0;
+
+    globalCommodityInfo.type = type;
+
+    calculateTotalPrice();
+}

@@ -24,8 +24,9 @@ public:
 private:
     void paint();
     void Connect();
+    void calculateTotalPrice();
 
-private:
+public:
     QGridLayout* gridLayout;
 
     QLabel* lblID;
@@ -65,13 +66,12 @@ signals:
 public slots:
 //    void on_lineEditCategory_changed(const QString &content);
 //    void on_lineEditCompany_changed(const QString &content);
-//    void on_lineEditCount_changed(const QString &content);
-//    void on_lineEditPrice_changed(const QString &content);
+    void on_lineEditCount_changed(const QString &content);
+    void on_lineEditPrice_changed(const QString &content);
 //    void on_lineEditTotalPrice_changed(const QString &content);
 //    void on_lineEditNote_changed(const QString &content);
-
 //    void on_dateTimeEdit_changed(const QDateTime &dateTime);
-//    void on_comboBoxType_changed(const QString &content);
+    void on_comboBoxType_changed(const QString &content);
 };
 
 #endif // EDIT_H

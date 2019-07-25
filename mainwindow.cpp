@@ -387,11 +387,35 @@ void MainWindow::on_view_select(QModelIndex index)
 void MainWindow::on_btnOK_clicked()
 {
     qDebug() << "OK";
+
+    globalCommodityInfo.ID = edit.lineEditID->text().toInt();
+    globalCommodityInfo.type = edit.comboBoxType->currentIndex();
+    globalCommodityInfo.time = edit.dateTimeEdit->text();
+    globalCommodityInfo.category = edit.lineEditCategory->text();
+    globalCommodityInfo.company = edit.lineEditCompany->text();
+    globalCommodityInfo.count = edit.lineEditCount->text().toInt();
+    globalCommodityInfo.price = edit.lineEditPrice->text().toDouble();
+    globalCommodityInfo.totalPrice = edit.lineEditTotalPrice->text().toDouble();
+    globalCommodityInfo.note = edit.lineEditNote->text();
+
+    qDebug() << "ID: " << globalCommodityInfo.ID;
+    qDebug() << "type: " << globalCommodityInfo.type;
+    qDebug() << "time: " << globalCommodityInfo.time;
+    qDebug() << "category: " << globalCommodityInfo.category;
+    qDebug() << "company: " << globalCommodityInfo.company;
+    qDebug() << "count: " << globalCommodityInfo.count;
+    qDebug() << "price: " << globalCommodityInfo.price;
+    qDebug() << "totalPrice: " << globalCommodityInfo.totalPrice;
+    qDebug() << "note: " << globalCommodityInfo.note;
+
+    //edit.close();
 }
 
 void MainWindow::on_btnCancel_clicked()
 {
     qDebug() << "Cancel";
+
+    edit.close();
 }
 
 
