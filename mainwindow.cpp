@@ -273,6 +273,21 @@ void MainWindow::select(int type = -1)
     lblTotalPriceInfo->setText(sum);
 }
 
+void MainWindow::Insert(CommodityInfo info)
+{
+    sqlInsert = QString("INSERT INTO Commodity(Time, Type, Category, Company, Count, Price, TotalPrice, Note)"
+                        "VALUES ('%0', '%1', '%2', '%3', '%4', '%5', '%6', '%7')")
+            .arg(info.time).arg(info.type).arg(info.category).arg(info.company).arg(info.count).arg(info.price)
+            .arg(info.totalPrice).arg(info.note);
+
+    sqliteUtil->ExecuteRecord(sqlInsert);
+}
+
+void MainWindow::Update(CommodityInfo info)
+{
+
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(m_Loop != NULL)
@@ -324,13 +339,26 @@ void MainWindow::on_btnSearch_clicked()
 
 void MainWindow::on_btnInsert_clicked()
 {
-    if(edit.exec() == 1)
-        ;
+    edit.InsertData = true;
+
+    edit.exec();
 }
 
 void MainWindow::on_btnUpdate_clicked()
 {
+    QModelIndexList select = view->selectionModel()->selectedRows();
 
+    if(!select.empty())
+    {
+        edit.InsertData = false;
+
+        edit.exec();
+    }
+    else
+    {
+        QMessageBox::information(NULL, tr(""), tr("select one record."),
+                                 QMessageBox::Yes, QMessageBox::Yes);
+    }
 }
 
 void MainWindow::on_btnDelete_clicked()
@@ -408,7 +436,12 @@ void MainWindow::on_btnOK_clicked()
     qDebug() << "totalPrice: " << globalCommodityInfo.totalPrice;
     qDebug() << "note: " << globalCommodityInfo.note;
 
-    //edit.close();
+    if(edit.InsertData)
+        Insert(globalCommodityInfo);
+    else
+        Update(globalCommodityInfo);
+
+    edit.close();
 }
 
 void MainWindow::on_btnCancel_clicked()

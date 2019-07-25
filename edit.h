@@ -20,13 +20,14 @@ public:
     explicit Edit(QWidget *parent = nullptr);
     ~Edit();
     int exec();
+    bool InsertData;
 
 private:
     void paint();
     void Connect();
     void calculateTotalPrice();
 
-public:
+private:
     QGridLayout* gridLayout;
 
     QLabel* lblID;
@@ -39,6 +40,7 @@ public:
     QLabel* lblTotalPrice;
     QLabel* lblNote;
 
+public:
     QLineEdit* lineEditID;
     QLineEdit* lineEditCategory;
     QLineEdit* lineEditCompany;
@@ -50,7 +52,6 @@ public:
     QDateTimeEdit* dateTimeEdit;
     QComboBox* comboBoxType;
 
-public:
     QPushButton* btnOK;
     QPushButton* btnCancel;
 

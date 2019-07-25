@@ -128,10 +128,10 @@ void Edit::calculateTotalPrice()
     double totalPrice = 0;
 
     if(type == 0)
-        totalPrice = - price * count;
+        totalPrice = price * count;
 
     if(type == 1)
-        totalPrice = price * count;
+        totalPrice = - price * count;
 
     lineEditTotalPrice->setText(QString("%0").arg(totalPrice));
 }
