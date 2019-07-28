@@ -93,8 +93,9 @@ private:
     void paint();
     void Connect();
     void select(int type);
-    void Insert(CommodityInfo info);
-    void Update(CommodityInfo info);
+    void insert(CommodityInfo info);
+    void update(CommodityInfo info);
+    void clear();
 
     bool isFileExist(QString fullFilePath);
 

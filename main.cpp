@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
     //        return 1;
 
     MainWindow m;
+    m.setMinimumHeight(500);
+    m.setMinimumWidth(1100);
     m.exec();
 
     //    Edit edit;

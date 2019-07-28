@@ -72,7 +72,7 @@ void MainWindow::initDB()
                 "VALUES ('2019-08-24 09:32:44', '1', 'ball', 'CBA', '3', '40.0', '120', 'happy')";
 
     SqliteUtil* sqliteUtil = new SqliteUtil(DBName);
-    //sqliteUtil->ExecuteRecord(sqlCreate);
+    // sqliteUtil->ExecuteRecord(sqlCreate);
     sqliteUtil->ExecuteRecord(sqlInsert);
     delete sqliteUtil;
 }
@@ -273,7 +273,7 @@ void MainWindow::select(int type = -1)
     lblTotalPriceInfo->setText(sum);
 }
 
-void MainWindow::Insert(CommodityInfo info)
+void MainWindow::insert(CommodityInfo info)
 {
     sqlInsert = QString("INSERT INTO Commodity(Time, Type, Category, Company, Count, Price, TotalPrice, Note)"
                         "VALUES ('%0', '%1', '%2', '%3', '%4', '%5', '%6', '%7')")
@@ -283,9 +283,30 @@ void MainWindow::Insert(CommodityInfo info)
     sqliteUtil->ExecuteRecord(sqlInsert);
 }
 
-void MainWindow::Update(CommodityInfo info)
+void MainWindow::update(CommodityInfo info)
 {
+    sqlUpdate = QString("UPDATE Commodity SET Time = '%1', Type = '%2', Category = '%3', Company = '%4', Count = '%5', "
+                        "Price = '%6', TotalPrice = '%7', Note = '%8' WHERE ID = %0")
+            .arg(info.ID).arg(info.time).arg(info.type).arg(info.category).arg(info.company).arg(info.count).arg(info.price)
+            .arg(info.totalPrice).arg(info.note);
 
+    qDebug() << sqlUpdate;
+
+    sqliteUtil->ExecuteRecord(sqlUpdate);
+}
+
+void MainWindow::clear()
+{
+    globalCommodityInfo.ID = -1;
+    globalCommodityInfo.type = -1;
+    globalCommodityInfo.time = QDateTime::currentDateTime()
+            .toString("yyyy-MM-dd HH：mm：ss");;
+    globalCommodityInfo.category = "";
+    globalCommodityInfo.company = "";
+    globalCommodityInfo.count = 0;
+    globalCommodityInfo.price = 0;
+    globalCommodityInfo.totalPrice = 0;
+    globalCommodityInfo.note = "";
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -351,6 +372,16 @@ void MainWindow::on_btnUpdate_clicked()
     if(!select.empty())
     {
         edit.InsertData = false;
+
+        edit.lineEditID->setText(QString("%0").arg(globalCommodityInfo.ID));
+        edit.comboBoxType->setCurrentIndex(globalCommodityInfo.type);
+        edit.dateTimeEdit->setDateTime(QDateTime::fromString(globalCommodityInfo.time, "yyyy-MM-dd hh:mm:ss"));
+        edit.lineEditCategory->setText(globalCommodityInfo.category);
+        edit.lineEditCompany->setText(globalCommodityInfo.company);
+        edit.lineEditCount->setText(QString("%0").arg(globalCommodityInfo.count));
+        edit.lineEditPrice->setText(QString("%0").arg(globalCommodityInfo.price));
+        edit.lineEditTotalPrice->setText(QString("%0").arg(globalCommodityInfo.totalPrice));
+        edit.lineEditNote->setText(globalCommodityInfo.note);
 
         edit.exec();
     }
@@ -437,9 +468,13 @@ void MainWindow::on_btnOK_clicked()
     qDebug() << "note: " << globalCommodityInfo.note;
 
     if(edit.InsertData)
-        Insert(globalCommodityInfo);
+        insert(globalCommodityInfo);
     else
-        Update(globalCommodityInfo);
+        update(globalCommodityInfo);
+
+    select(TypeAll);
+
+    clear();
 
     edit.close();
 }
