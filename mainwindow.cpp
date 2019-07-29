@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     paint();
 
     Connect();
+
+    //emit on_btnSearch_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -42,9 +44,9 @@ void MainWindow::initPara()
 {
     company = "";
 
-    dateTimeBegin = QDateTime::currentDateTime().
+    dateTimeBegin = QDateTime::currentDateTime().addMonths(-1).
             toString("yyyy-MM-dd HH：mm：ss");
-    dateTimeEnd = QDateTime::currentDateTime().addMonths(1).
+    dateTimeEnd = QDateTime::currentDateTime().
             toString("yyyy-MM-dd HH：mm：ss");
 }
 
@@ -62,8 +64,8 @@ void MainWindow::initDB()
 {
     DBName = "Commodity.db";
 
-    //    if(isFileExist(DBName))
-    //        return;
+    if(isFileExist(DBName))
+        return;
 
     sqlCreate = "CREATE TABLE Commodity (ID INTEGER PRIMARY KEY AUTOINCREMENT, Time VARCHAR(32), Type VARCHAR(32), "
                 "Category VARCHAR(32), Company VARCHAR(32), Count VARCHAR(32), Price VARCHAR(32), TotalPrice VARCHAR(32), Note VARCHAR(128))";
@@ -72,8 +74,8 @@ void MainWindow::initDB()
                 "VALUES ('2019-08-24 09:32:44', '1', 'ball', 'CBA', '3', '40.0', '120', 'happy')";
 
     SqliteUtil* sqliteUtil = new SqliteUtil(DBName);
-    // sqliteUtil->ExecuteRecord(sqlCreate);
-    sqliteUtil->ExecuteRecord(sqlInsert);
+    sqliteUtil->ExecuteRecord(sqlCreate);
+    // sqliteUtil->ExecuteRecord(sqlInsert);
     delete sqliteUtil;
 }
 
@@ -96,6 +98,9 @@ void MainWindow::paint()
     view->setSelectionMode(QAbstractItemView::SingleSelection);
     view->setShowGrid(true);
     view->setModel(model);
+
+    view->setColumnHidden(0, true);
+    view->setColumnWidth(1, 200);
 
     btnSearch = new QPushButton();
     btnInsert = new QPushButton();
@@ -193,8 +198,8 @@ void MainWindow::paint()
     dateTimeEditBegin->setCalendarPopup(true);
     dateTimeEditEnd->setCalendarPopup(true);
 
-    dateTimeEditBegin->setDateTime(QDateTime::currentDateTime());
-    dateTimeEditEnd->setDateTime(QDateTime::currentDateTime().addMonths(1));
+    dateTimeEditBegin->setDateTime(QDateTime::currentDateTime().addMonths(-1));
+    dateTimeEditEnd->setDateTime(QDateTime::currentDateTime());
 }
 
 void MainWindow::Connect()
@@ -250,9 +255,13 @@ void MainWindow::select(int type = -1)
     filter = QString("%0 %1 %2").arg(filterTime).arg(filterType).arg(filterCompany);
 
     qDebug() << filter;
+    qDebug() << QString("SELECT * FROM Commodity WHERE %0").arg(filter);
 
     model->setFilter(filter);
     model->select();
+
+    view->setColumnHidden(0, true);
+    view->setColumnWidth(1, 200);
 
     // info
     QString sqlCount = QString("SELECT Count(ID) FROM Commodity WHERE %0").arg(filter);
@@ -297,6 +306,7 @@ void MainWindow::update(CommodityInfo info)
 
 void MainWindow::clear()
 {
+    // clear paramaters
     globalCommodityInfo.ID = -1;
     globalCommodityInfo.type = -1;
     globalCommodityInfo.time = QDateTime::currentDateTime()
@@ -307,6 +317,16 @@ void MainWindow::clear()
     globalCommodityInfo.price = 0;
     globalCommodityInfo.totalPrice = 0;
     globalCommodityInfo.note = "";
+
+    // clear controls
+    edit.lineEditID->setText("");
+    edit.comboBoxType->setCurrentIndex(-1);
+    edit.lineEditCategory->setText("");
+    edit.lineEditCompany->setText("");
+    edit.lineEditCount->setText("");
+    edit.lineEditPrice->setText("");
+    edit.lineEditTotalPrice->setText("");
+    edit.lineEditNote->setText("");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -356,11 +376,34 @@ void MainWindow::on_btnSearch_clicked()
 {
     model->setTable("Commodity");
     model->select();
+
+    view->setColumnHidden(0, true);
+    view->setColumnWidth(1, 200);
+
+    // info
+    QString sqlCount = QString("SELECT Count(ID) FROM Commodity");
+    QString count = "";
+    QString sqlSum = QString("SELECT SUM(TotalPrice) FROM Commodity");
+    QString sum = "";
+
+    qDebug() << sqlCount;
+    qDebug() << sqlSum;
+
+    count = sqliteUtil->ExecuteString(sqlCount);
+    sum = sqliteUtil->ExecuteString(sqlSum);
+
+    qDebug() << count;
+    qDebug() << sum;
+
+    lblRecordCountInfo->setText(count);
+    lblTotalPriceInfo->setText(sum);
 }
 
 void MainWindow::on_btnInsert_clicked()
 {
     edit.InsertData = true;
+
+    edit.dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
     edit.exec();
 }
@@ -482,6 +525,8 @@ void MainWindow::on_btnOK_clicked()
 void MainWindow::on_btnCancel_clicked()
 {
     qDebug() << "Cancel";
+
+    clear();
 
     edit.close();
 }

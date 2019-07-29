@@ -65,6 +65,8 @@ private:
 
     QLineEdit* lineEditCompany;
 
+
+
 private:
     Edit edit;
 
