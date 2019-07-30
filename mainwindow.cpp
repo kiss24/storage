@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QMessageBox>
+#include <QHeaderView>
 
 extern CommodityInfo globalCommodityInfo;
 
@@ -100,7 +101,8 @@ void MainWindow::paint()
     view->setModel(model);
 
     view->setColumnHidden(0, true);
-    view->setColumnWidth(1, 200);
+    view->horizontalHeader()->
+            setSectionResizeMode(QHeaderView::Stretch);
 
     btnSearch = new QPushButton();
     btnInsert = new QPushButton();
@@ -539,6 +541,13 @@ void MainWindow::on_btnCancel_clicked()
 
     edit.close();
 }
+
+//void MainWindow::on_edit_close()
+//{
+//    clear();
+
+//    view->clearSelection();
+//}
 
 
 

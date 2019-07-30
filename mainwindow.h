@@ -125,6 +125,8 @@ public slots:
 
     void on_btnOK_clicked();
     void on_btnCancel_clicked();
+
+//    void on_edit_close();
 };
 
 #endif // MAINWINDOW_H

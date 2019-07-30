@@ -73,7 +73,7 @@ void Edit::paint()
 
     comboBoxType->addItem(tr("Out"));
     comboBoxType->addItem(tr("In"));
-    comboBoxType->setCurrentIndex(-1);
+    comboBoxType->setCurrentIndex(0);
 
     btnCancel = new QPushButton();
     btnOK = new QPushButton();
@@ -205,10 +205,7 @@ void Edit::on_comboBoxType_changed(const QString &content)
 
     int type = -1;
 
-    if(content == "In")
-        type = 1;
-    if(content == "Out")
-        type = 0;
+    type = comboBoxType->currentIndex();
 
     globalCommodityInfo.type = type;
 
