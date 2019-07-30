@@ -200,8 +200,8 @@ void MainWindow::paint()
     dateTimeEditBegin->setCalendarPopup(true);
     dateTimeEditEnd->setCalendarPopup(true);
 
-    dateTimeEditBegin->setDateTime(QDateTime::currentDateTime().addMonths(-1));
-    dateTimeEditEnd->setDateTime(QDateTime::currentDateTime());
+    dateTimeEditBegin->setDate(QDate::currentDate().addMonths(-1));
+    dateTimeEditEnd->setDate(QDate::currentDate().addDays(1));
 }
 
 void MainWindow::Connect()
@@ -234,6 +234,9 @@ void MainWindow::select(int type = -1)
     QString filterTime= "";
     QString filterType = "";
     QString filterCompany = "";
+
+    dateTimeBegin = dateTimeEditBegin->dateTime().toString("yyyy-MM-dd HH:mm:ss");
+    dateTimeEnd = dateTimeEditEnd->dateTime().toString("yyyy-MM-dd HH:mm:ss");
 
     filterTime = "Time > '" + dateTimeBegin + "' AND Time < '" + dateTimeEnd + "'";
 
