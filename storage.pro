@@ -40,3 +40,5 @@ HEADERS += \
     common.h \
     edit.h \
     global.h
+
+TRANSLATIONS += cn.ts

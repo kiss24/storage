@@ -31,14 +31,14 @@ int Login::exec()
 
 void Login::paint()
 {
-    lblUser = new QLabel(tr("用户"));
-    lblPwd = new QLabel(tr("密码"));
+    lblUser = new QLabel(tr("User"));
+    lblPwd = new QLabel(tr("Password"));
 
     txtUser = new QLineEdit();
     txtPwd = new QLineEdit();
 
-    btnLogin = new QPushButton("登录");
-    btnCancel = new QPushButton("取消");
+    btnLogin = new QPushButton("Login");
+    btnCancel = new QPushButton("Canel");
 
     hLayoutUser = new QHBoxLayout();
     hLayoutUser->addWidget(lblUser);
@@ -78,7 +78,7 @@ void Login::on_btnLogin_clicked()
     }
     else
     {
-        QMessageBox::warning(this,tr("警告"),tr("用户名或密码错误!"),QMessageBox::Yes);
+        QMessageBox::warning(this,tr("warring"),tr("Incorrect username or password"),QMessageBox::Yes);
 
         this->txtUser->clear();
         this->txtPwd->clear();

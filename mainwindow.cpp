@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
     Connect();
 
-    //emit on_btnSearch_clicked();
+    emit on_btnSearch_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -375,6 +375,15 @@ void MainWindow::on_lineEditCompany_changed(const QString &content)
 void MainWindow::on_btnSearch_clicked()
 {
     model->setTable("Commodity");
+    model->setHeaderData(0, Qt::Horizontal, tr("HDID"));
+    model->setHeaderData(1, Qt::Horizontal, tr("HDTime"));
+    model->setHeaderData(2, Qt::Horizontal, tr("HDType"));
+    model->setHeaderData(3, Qt::Horizontal, tr("HDCategory"));
+    model->setHeaderData(4, Qt::Horizontal, tr("HDCompany"));
+    model->setHeaderData(5, Qt::Horizontal, tr("HDCount"));
+    model->setHeaderData(6, Qt::Horizontal, tr("HDPrice"));
+    model->setHeaderData(7, Qt::Horizontal, tr("HDTotalPrice"));
+    model->setHeaderData(8, Qt::Horizontal, tr("HDNote"));
     model->select();
 
     view->setColumnHidden(0, true);
