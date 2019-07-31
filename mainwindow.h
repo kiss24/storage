@@ -68,7 +68,7 @@ private:
 
 
 private:
-    Edit edit;
+    Edit *edit;
 
     QString DBName;
     CommodityInfo commodityInfo;

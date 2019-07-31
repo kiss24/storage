@@ -10,6 +10,8 @@ extern CommodityInfo globalCommodityInfo;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {   
+    edit = new Edit();
+
     initPara();
 
     initDB();
@@ -28,6 +30,7 @@ MainWindow::~MainWindow()
     delete vLayoutMain;
     delete m_Loop;
     delete sqliteUtil;
+    delete edit;
 }
 
 int MainWindow::exec()
@@ -222,8 +225,8 @@ void MainWindow::Connect()
 
     connect(view, &QTableView::clicked, this, &MainWindow::on_view_select);
 
-    connect(edit.btnOK, &QPushButton::clicked, this, &MainWindow::on_btnOK_clicked);
-    connect(edit.btnCancel, &QPushButton::clicked, this, &MainWindow::on_btnCancel_clicked);
+    connect(edit->btnOK, &QPushButton::clicked, this, &MainWindow::on_btnOK_clicked);
+    connect(edit->btnCancel, &QPushButton::clicked, this, &MainWindow::on_btnCancel_clicked);
 }
 
 // type: -1:All 0：Out 1:In
@@ -324,14 +327,14 @@ void MainWindow::clear()
     globalCommodityInfo.note = "";
 
     // clear controls
-    edit.lineEditID->setText("");
-    edit.comboBoxType->setCurrentIndex(-1);
-    edit.lineEditCategory->setText("");
-    edit.lineEditCompany->setText("");
-    edit.lineEditCount->setText("");
-    edit.lineEditPrice->setText("");
-    edit.lineEditTotalPrice->setText("");
-    edit.lineEditNote->setText("");
+    edit->lineEditID->setText("");
+    edit->comboBoxType->setCurrentIndex(-1);
+    edit->lineEditCategory->setText("");
+    edit->lineEditCompany->setText("");
+    edit->lineEditCount->setText("");
+    edit->lineEditPrice->setText("");
+    edit->lineEditTotalPrice->setText("");
+    edit->lineEditNote->setText("");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -415,11 +418,9 @@ void MainWindow::on_btnSearch_clicked()
 
 void MainWindow::on_btnInsert_clicked()
 {
-    edit.InsertData = true;
-
-    edit.dateTimeEdit->setDateTime(QDateTime::currentDateTime());
-
-    edit.exec();
+    edit->InsertData = true;
+    edit->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    edit->exec();
 }
 
 void MainWindow::on_btnUpdate_clicked()
@@ -428,19 +429,19 @@ void MainWindow::on_btnUpdate_clicked()
 
     if(!select.empty())
     {
-        edit.InsertData = false;
+        edit->InsertData = false;
 
-        edit.lineEditID->setText(QString("%0").arg(globalCommodityInfo.ID));
-        edit.comboBoxType->setCurrentIndex(globalCommodityInfo.type);
-        edit.dateTimeEdit->setDateTime(QDateTime::fromString(globalCommodityInfo.time, "yyyy-MM-dd hh:mm:ss"));
-        edit.lineEditCategory->setText(globalCommodityInfo.category);
-        edit.lineEditCompany->setText(globalCommodityInfo.company);
-        edit.lineEditCount->setText(QString("%0").arg(globalCommodityInfo.count));
-        edit.lineEditPrice->setText(QString("%0").arg(globalCommodityInfo.price));
-        edit.lineEditTotalPrice->setText(QString("%0").arg(globalCommodityInfo.totalPrice));
-        edit.lineEditNote->setText(globalCommodityInfo.note);
+        edit->lineEditID->setText(QString("%0").arg(globalCommodityInfo.ID));
+        edit->comboBoxType->setCurrentIndex(globalCommodityInfo.type);
+        edit->dateTimeEdit->setDateTime(QDateTime::fromString(globalCommodityInfo.time, "yyyy-MM-dd hh:mm:ss"));
+        edit->lineEditCategory->setText(globalCommodityInfo.category);
+        edit->lineEditCompany->setText(globalCommodityInfo.company);
+        edit->lineEditCount->setText(QString("%0").arg(globalCommodityInfo.count));
+        edit->lineEditPrice->setText(QString("%0").arg(globalCommodityInfo.price));
+        edit->lineEditTotalPrice->setText(QString("%0").arg(globalCommodityInfo.totalPrice));
+        edit->lineEditNote->setText(globalCommodityInfo.note);
 
-        edit.exec();
+        edit->exec();
     }
     else
     {
@@ -504,15 +505,15 @@ void MainWindow::on_btnOK_clicked()
 {
     qDebug() << "OK";
 
-    globalCommodityInfo.ID = edit.lineEditID->text().toInt();
-    globalCommodityInfo.type = edit.comboBoxType->currentIndex();
-    globalCommodityInfo.time = edit.dateTimeEdit->text();
-    globalCommodityInfo.category = edit.lineEditCategory->text();
-    globalCommodityInfo.company = edit.lineEditCompany->text();
-    globalCommodityInfo.count = edit.lineEditCount->text().toInt();
-    globalCommodityInfo.price = edit.lineEditPrice->text().toDouble();
-    globalCommodityInfo.totalPrice = edit.lineEditTotalPrice->text().toDouble();
-    globalCommodityInfo.note = edit.lineEditNote->text();
+    globalCommodityInfo.ID = edit->lineEditID->text().toInt();
+    globalCommodityInfo.type = edit->comboBoxType->currentIndex();
+    globalCommodityInfo.time = edit->dateTimeEdit->text();
+    globalCommodityInfo.category = edit->lineEditCategory->text();
+    globalCommodityInfo.company = edit->lineEditCompany->text();
+    globalCommodityInfo.count = edit->lineEditCount->text().toInt();
+    globalCommodityInfo.price = edit->lineEditPrice->text().toDouble();
+    globalCommodityInfo.totalPrice = edit->lineEditTotalPrice->text().toDouble();
+    globalCommodityInfo.note = edit->lineEditNote->text();
 
     qDebug() << "ID: " << globalCommodityInfo.ID;
     qDebug() << "type: " << globalCommodityInfo.type;
@@ -524,7 +525,7 @@ void MainWindow::on_btnOK_clicked()
     qDebug() << "totalPrice: " << globalCommodityInfo.totalPrice;
     qDebug() << "note: " << globalCommodityInfo.note;
 
-    if(edit.InsertData)
+    if(edit->InsertData)
         insert(globalCommodityInfo);
     else
         update(globalCommodityInfo);
@@ -533,7 +534,7 @@ void MainWindow::on_btnOK_clicked()
 
     clear();
 
-    edit.close();
+    edit->close();
 }
 
 void MainWindow::on_btnCancel_clicked()
@@ -542,7 +543,7 @@ void MainWindow::on_btnCancel_clicked()
 
     clear();
 
-    edit.close();
+    edit->close();
 }
 
 //void MainWindow::on_edit_close()

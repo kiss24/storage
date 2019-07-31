@@ -20,10 +20,11 @@ int main(int argc, char *argv[])
     //    if(login.exec() == 1)
     //        return 1;
 
-    MainWindow m;
-    m.setMinimumHeight(500);
-    m.setMinimumWidth(1100);
-    m.exec();
+    MainWindow *m = new MainWindow();
+    m->setMinimumHeight(500);
+    m->setMinimumWidth(1100);
+    m->exec();
+    delete m;
 
     //    Edit edit;
     //        if(edit.exec() == 1)
